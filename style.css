@@ -1,0 +1,201 @@
+:root {
+  --bg: #fffbe8;
+  --panel-bg: #fffef2;
+  --ink: #3a2f14;
+  --accent: #e8b400;
+  --accent-dark: #b98200;
+  --green: #4c7a3d;
+  --green-dark: #345228;
+  --border: #d8c27a;
+  --danger: #a4372b;
+  --muted: #8a7c52;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14px;
+}
+
+.hidden { display: none !important; }
+
+/* Credit / splash screen */
+#creditScreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #fff6c9 0%, #ffe985 100%);
+  padding: 24px;
+}
+#creditBox {
+  max-width: 560px;
+  background: var(--panel-bg);
+  border: 3px solid var(--accent-dark);
+  border-radius: 8px;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 6px 0 var(--border);
+}
+#creditBox h1 {
+  color: var(--green-dark);
+  letter-spacing: 2px;
+  margin-top: 0;
+}
+.creditText {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.creditText a { color: var(--accent-dark); }
+
+/* Top bar */
+#topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 20px 0 20px;
+}
+#gameTitle {
+  margin: 0;
+  color: var(--green-dark);
+  letter-spacing: 1px;
+}
+#eraLabel {
+  font-weight: bold;
+  color: var(--accent-dark);
+}
+
+#mainCounter {
+  text-align: center;
+  margin: 6px 0 0 0;
+  color: var(--ink);
+}
+#subCounter {
+  text-align: center;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+/* Layout */
+#columns {
+  display: flex;
+  gap: 14px;
+  padding: 0 16px 40px 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.col {
+  flex: 1 1 320px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel {
+  background: var(--panel-bg);
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.panel h3 {
+  margin: 0 0 8px 0;
+  color: var(--green-dark);
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 4px;
+}
+
+.button2 {
+  background: var(--accent);
+  border: 2px solid var(--accent-dark);
+  border-radius: 4px;
+  color: #3a2500;
+  font-family: inherit;
+  font-weight: bold;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.button2:hover:not(:disabled) { background: var(--accent-dark); color: #fff; }
+.button2:disabled { opacity: 0.4; cursor: default; }
+
+.cost { color: var(--muted); font-size: 12px; }
+.lvl { color: var(--green-dark); font-weight: bold; }
+.rate { color: var(--muted); font-size: 12px; }
+
+input[type="range"] { width: 100%; }
+input[type="checkbox"] { transform: scale(1.1); }
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin: 10px 0;
+}
+
+/* Project list */
+#projectList { display: flex; flex-direction: column; gap: 6px; max-height: 480px; overflow-y: auto; }
+.project {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  background: #fffef8;
+}
+.project.owned {
+  opacity: 0.5;
+}
+.project .pTitle { font-weight: bold; color: var(--green-dark); }
+.project .pFlavor { font-size: 11px; color: var(--muted); display: block; margin: 3px 0 5px 0; font-style: italic; }
+.project .pCost { font-size: 11px; color: var(--muted); margin-left: 6px; }
+.project button { width: 100%; text-align: left; }
+
+/* Narrative overlay */
+#narrativeOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(40, 30, 10, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+#narrativeBox {
+  max-width: 560px;
+  background: var(--panel-bg);
+  border: 3px solid var(--green-dark);
+  border-radius: 8px;
+  padding: 24px;
+}
+#narrativeText {
+  line-height: 1.6;
+  margin-bottom: 16px;
+  white-space: pre-line;
+}
+
+#negotiationLog, #battleLog {
+  font-size: 12px;
+  max-height: 160px;
+  overflow-y: auto;
+  color: var(--muted);
+  margin-top: 8px;
+  border-top: 1px dashed var(--border);
+  padding-top: 6px;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 10px;
+}
+
+@media (max-width: 700px) {
+  #columns { flex-direction: column; }
+  .col { min-width: 0; }
+}
