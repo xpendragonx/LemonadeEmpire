@@ -541,15 +541,19 @@ const Farm = {
 
     const queue = this.customers.filter(c => c.state === 'queue' || c.state === 'toStand');
     queue.sort((a, b) => b.x - a.x);
-    queue.forEach((c, i) => { c.slot = STAND_X - i * 11; });
+        queue.forEach((c, i) => {
+      c.serving = i < SERVE_SPOTS;
+      c.slot = c.serving ? STAND_X + 14 - i * 14 : STAND_X + 14 - (SERVE_SPOTS - 1) * 14 - (i - SERVE_SPOTS + 1) * 11;
+    });
 
     this.customers = this.customers.filter(c => {
       if (c.bubble) c.bubble.t -= dt;
       if (c.state === 'toStand') {
         if (c.x < c.slot) { c.x = Math.min(c.slot, c.x + c.speed * dt); c.walkT += dt; }
-        else if (c.slot === STAND_X) { c.state = 'queue'; c.t = 0; }
+        else if (c.serving) { c.state = 'queue'; c.t = 0; }
       } else if (c.state === 'queue') {
-        if (c.slot !== STAND_X) { c.state = 'toStand'; return true; }
+       if (!c.serving) { c.state = 'toStand'; return true; }
+        if (c.x < c.slot) { c.x = Math.min(c.slot, c.x + c.speed * dt); c.walkT += dt; }
         c.t += dt;
         if (c.t > 0.5) {
           if (s.cupsUnsold >= 1) {
