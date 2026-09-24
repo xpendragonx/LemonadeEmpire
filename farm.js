@@ -23,7 +23,8 @@ const PLAYER_SPEED = 150;
 const FARM_TRAFFIC = 6;           // customer-rate scale while you run the stand by hand
 const MART_SHARE = 0.4;           // share of customers still coming to you once MegaMart opens
 const MART_STAGES = [70, 130, 190]; // cups sold: coming soon, construction, grand opening
-const QUEUE_MAX = 5;
+const QUEUE_MAX = 7;
+const SERVE_SPOTS = 3;             // customers served side by side at the counter
 
 const JUICE_ZONES = [
   { upTo: 0.4, q: 0.6, label: 'Weak', color: '#b8b09a' },
