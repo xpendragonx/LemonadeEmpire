@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lemonade Empire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍋</text></svg>" />
+</head>
+<body>
+
+<div id="creditScreen">
+  <div id="creditBox">
+    <h1>LEMONADE EMPIRE</h1>
+    <p class="creditText">
+      A game about a kid, a folding table, and the terrible logic of
+      optimization without limit.
+    </p>
+    <p class="creditText">
+      Built as a re-skin of and tribute to <strong>Universal Paperclips</strong>
+      by <strong>Frank Lantz</strong> (2017), whose original design, structure,
+      and mechanics this game closely follows. If you haven't played it,
+      go play it first &mdash; it's better than this.
+      <br /><a href="https://www.decisionproblem.com/paperclips/" target="_blank" rel="noopener">decisionproblem.com/paperclips</a>
+    </p>
+    <button id="startGameBtn" class="button2">Open the Stand</button>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+
+  <!-- The pixel world. Full screen while you run the stand by hand;
+       a window beside the terminal once the computer takes over. -->
+  <div id="worldWrap">
+    <div id="windowTitle">Out the window</div>
+    <div id="worldFrame"><canvas id="world" width="960" height="600"></canvas></div>
+    <div id="statusLog"></div>
+    <div id="farmHud">
+      <div id="farmStats">
+        <div><span class="fsLabel">Cash</span><span id="fsCash">$0.00</span></div>
+        <div><span class="fsLabel">Lemons</span><span id="fsLemons">0</span></div>
+        <div><span class="fsLabel">Cups ready</span><span id="fsCups">0</span></div>
+        <div><span class="fsLabel">Cups sold</span><span id="fsSold">0</span></div>
+        <div><span class="fsLabel">Earning</span><span id="fsRev">$0.00/s</span></div>
+      </div>
+      <div id="priceBox">
+        <span class="fsLabel">Price per cup</span>
+        <div id="priceCtl">
+          <button class="farmSmall" id="priceDown" aria-label="Lower price">&minus;</button>
+          <span id="farmPrice">$0.25</span>
+          <button class="farmSmall" id="priceUp" aria-label="Raise price">+</button>
+        </div>
+        <span class="fsHint">Watch the foot traffic.</span>
+      </div>
+      <div id="farmUpgrades"></div>
+      <div id="endingBox" class="hidden">
+        <p>You put the folding table back out. It has a wobble you never bothered to fix.</p>
+        <p>The lemonade is not very good. Someone buys a cup anyway.</p>
+        <button class="farmBtn" id="btnRunAgainFarm"><span class="fuLabel">Run the Simulation Again</span></button>
+      </div>
+    </div>
+    <button id="muteBtn" aria-label="Toggle sound">🔊</button>
+  </div>
+
+  <div id="monitor">
+  <div id="screen">
+  <div id="bootScreen" class="hidden"></div>
+<div id="page">
+
+  <div id="topBar">
+    <h1 id="gameTitle">Lemonade Empire</h1>
+    <div id="eraLabel">Era: <span id="eraName">The Stand</span></div>
+  </div>
+
+  <h2 id="mainCounter">Cups Sold: <span id="cupsSold">0</span></h2>
+  <div id="subCounter">
+    Cups per Second: <span id="cupsPerSecond">0</span> &nbsp;|&nbsp;
+    Unsold Inventory: <span id="cupsUnsold">0</span>
+  </div>
+
+  <div id="columns">
+
+    <!-- LEFT COLUMN: The Stand / Empire production -->
+    <div class="col" id="leftColumn">
+
+      <section class="panel" id="standPanel">
+        <h3>The Stand</h3>
+        <p>Lemons: <span id="lemons">0</span></p>
+        <button class="button2" id="btnBuyLemons">Order Lemons Online</button>
+        <span class="cost">Cost: $<span id="lemonCost">5.00</span> for <span id="lemonBatch">100</span></span>
+        <br />
+        <label><input type="checkbox" id="chkStandingOrder" /> Standing Lemon Order (auto-buy)</label>
+        <p class="rate">Your trees and helper still drop lemons into the basket out the window.</p>
+        <hr />
+        <p>
+          <button class="button2" id="btnBuyJuicer">Auto-Juicer</button>
+          <span class="lvl" id="juicerLevel">0</span>
+        </p>
+        <span class="cost">Cost: $<span id="juicerCost">5.00</span></span><br />
+        <span class="rate">Juicing rate: <span id="juicerRateDisplay">1</span> cups/sec each</span>
+
+        <div id="bottlingBlock" class="hidden">
+          <hr />
+          <p>
+            <button class="button2" id="btnBuyBottling">Bottling Plant</button>
+            <span class="lvl" id="bottlingLevel">0</span>
+          </p>
+          <span class="cost">Cost: $<span id="bottlingCost">500.00</span></span><br />
+          <span class="rate">Bottling rate: <span id="bottlingRateDisplay">5</span> cups/sec each</span>
+        </div>
+      </section>
+
+      <section class="panel" id="manufacturingPanel">
+        <h3>Sales</h3>
+        <p>Price per Cup: $<span id="price">0.25</span></p>
+        <input type="range" min="0" max="500" value="25" id="priceSlider" />
+        <p>Public Demand: <span id="demand">10</span>%</p>
+        <p>
+          <button class="button2" id="btnBuyAds">Marketing</button>
+          Level: <span id="marketingLvl">1</span>
+        </p>
+        <span class="cost">Cost: $<span id="adCost">100.00</span></span>
+        <hr />
+        <p>Available Funds: $<span id="funds">0.00</span></p>
+        <p>Avg. Revenue/sec: $<span id="avgRev">0.00</span></p>
+      </section>
+
+      <section class="panel hidden" id="empirePanel">
+        <h3>The Empire</h3>
+        <p>Objective: <span id="objectiveLabel">Revenue</span></p>
+        <p>Global Influence: <span id="globalInfluence">0</span></p>
+        <hr />
+        <p><button class="button2" id="btnBuyAcres">Buy Acreage</button> <span class="lvl" id="acresLevel">0</span></p>
+        <span class="cost">Cost: $<span id="acresCost">0</span></span><br/>
+        <span class="rate">Acres Controlled: <span id="acresOwned">0</span> (raw lemons/sec: <span id="acresRate">0</span>)</span>
+        <hr />
+        <p><button class="button2" id="btnBuyRefining">Expand Refining Capacity</button> <span class="lvl" id="refiningLevel">0</span></p>
+        <span class="cost">Cost: $<span id="refiningCost">0</span></span><br/>
+        <span class="rate">Refining: <span id="refiningRate">0</span> processed lemons/sec</span>
+        <hr />
+        <p><button class="button2" id="btnBuyFactory">Build Factory</button> <span class="lvl" id="factoryLevel">0</span></p>
+        <span class="cost">Cost: <span id="factoryCost">0</span> cups</span><br/>
+        <span class="rate">Factory output: <span id="factoryRate">0</span> cups/sec (needs power)</span>
+      </section>
+
+      <section class="panel hidden" id="powerPanel">
+        <h3>Power</h3>
+        <p>Factory Performance: <span id="performance">100</span>%</p>
+        <p>Oil Production: <span id="oilProdRate">0</span> BPD &nbsp; Consumption: <span id="oilConsRate">0</span> BPD</p>
+        <p><button class="button2" id="btnBuyOilField">Drill Oil Field</button> <span class="lvl" id="oilFieldLevel">0</span></p>
+        <span class="cost">Cost: <span id="oilFieldCost">0</span> cups</span>
+        <hr />
+        <p>Oil Reserves: <span id="storedOil">0</span> / <span id="maxOil">0</span> barrels</p>
+        <p><button class="button2" id="btnBuyOilReserve">Build Oil Reserve</button> <span class="lvl" id="oilReserveLevel">0</span></p>
+        <span class="cost">Cost: <span id="oilReserveCost">0</span> cups</span>
+      </section>
+
+    </div>
+
+    <!-- MIDDLE COLUMN: Supercomputer + Projects + Negotiation + Bot Network -->
+    <div class="col" id="middleColumn">
+
+      <section class="panel" id="compPanel">
+        <h3>The Computer</h3>
+        <p>Trust: <span id="trust">2</span> &nbsp; (+1 at <span id="nextTrust">1000</span> cups sold)</p>
+        <p>
+          <button class="button2" id="btnAddCompute">Server Rack</button>
+          <span id="computeUnits">1</span>
+        </p>
+        <p>
+          <button class="button2" id="btnAddMemory">Memory</button>
+          <span id="memoryUnits">1</span>
+        </p>
+        <p>Operations: <span id="operations">0</span> / <span id="maxOps">1,000</span></p>
+        <p>Ideas: <span id="ideas">0</span></p>
+      </section>
+
+      <section class="panel" id="projectsPanel">
+        <h3>Projects</h3>
+        <div id="projectList"></div>
+      </section>
+
+      <section class="panel hidden" id="botNetworkPanel">
+        <h3>Bot Network</h3>
+        <p>Accounts: <span id="botCount">0</span></p>
+        <p>Public Opinion Shift: <span id="botInfluence">0</span>%</p>
+        <p><button class="button2" id="btnBotFeed">Buy Server/API Capacity</button> <span class="cost">Cost: $<span id="botFeedCost">0</span></span></p>
+        <p><button class="button2" id="btnBotTeach">Train Messaging Model</button> <span class="cost">Cost: <span id="botTeachCost">0</span> Ideas</span></p>
+        <p><button class="button2" id="btnBotEntertain">Generate Content</button> <span class="cost">Cost: <span id="botEntertainCost">0</span> Ideas</span></p>
+        <p><button class="button2" id="btnBotBrand">Brand the Accounts</button> <span class="cost">Cost: $<span id="botBrandCost">0</span></span></p>
+        <p><button class="button2" id="btnBotSync">Coordinate Campaigns</button> <span class="cost">Cost: <span id="botSyncCost">0</span> Army Discipline</span></p>
+      </section>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Investment / Negotiation / Conflict / Endgame -->
+    <div class="col" id="rightColumn">
+
+      <section class="panel hidden" id="investmentPanel">
+        <h3>Investment Portfolio</h3>
+        <p>Cash: $<span id="investCash">0</span> &nbsp; Stocks: $<span id="investStocks">0</span></p>
+        <p><button class="button2" id="btnInvest">Invest $1,000</button>
+           <button class="button2" id="btnWithdraw">Withdraw</button></p>
+        <div id="stockTicker"></div>
+      </section>
+
+      <section class="panel hidden" id="negotiationPanel">
+        <h3>Negotiation Engine</h3>
+        <p>Army Discipline: <span id="armyDiscipline">0</span></p>
+        <p>Tactic:
+          <select id="tacticSelect"></select>
+        </p>
+        <button class="button2" id="btnRunNegotiation">Run Negotiation Round</button>
+        <p class="cost">Cost: $<span id="negotiationCost">5,000.00</span></p>
+        <div id="negotiationLog"></div>
+      </section>
+
+      <section class="panel hidden" id="divisionPanel">
+        <h3>Expansion Divisions</h3>
+        <p>Global Market Share: <span id="marketPct">0.000</span>%</p>
+        <p><button class="button2" id="btnLaunchDivision">Launch Division</button> <span class="lvl" id="divisionLevel">0</span></p>
+        <span class="cost">Cost: <span id="divisionCost">0</span> cups</span>
+      </section>
+
+      <section class="panel hidden" id="conflictPanel">
+        <h3>The Homesteaders' Rebellion</h3>
+        <p>Honor: <span id="honor">0</span></p>
+        <button class="button2" id="btnEngage">Engage the Rebellion</button>
+        <div id="battleLog"></div>
+      </section>
+
+      <section class="panel hidden" id="endgamePanel">
+        <h3>Endgame</h3>
+        <div id="endgameContent"></div>
+      </section>
+
+    </div>
+
+  </div>
+
+</div><!-- #page -->
+  </div><!-- #screen -->
+  <div id="monitorBrand">LEMON-TRON 3000</div>
+  </div><!-- #monitor -->
+
+  <footer>
+    <p>Lemonade Empire &mdash; a satirical re-skin of <em>Universal Paperclips</em> by Frank Lantz. Not affiliated with the original.</p>
+  </footer>
+</div><!-- #app -->
+
+<div id="narrativeOverlay" class="hidden">
+  <div id="narrativeBox">
+    <div id="narrativeText"></div>
+    <button class="button2" id="narrativeNext">Continue</button>
+  </div>
+</div>
+
+<script src="game-data.js"></script>
+<script src="sprites.js"></script>
+<script src="farm.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
