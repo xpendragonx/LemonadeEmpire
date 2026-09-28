@@ -267,6 +267,20 @@ function updateDemand() {
   state.customerRate = state.marketingLevel * 2 * (state.demand / 100) * traffic * state.salesRateMult;
 }
 
+/* Sales: demand sets how many cups per second the public buys, limited
+   only by what's on the counter. No walking, no queue, no service time. */
+function sellCups(dt) {
+  const maxSaleRate = state.customerRate * competitionShare();
+  const sold = Math.min(state.cupsUnsold, maxSaleRate * dt);
+  state.cupsUnsold -= sold;
+  state.cupsSold += sold;
+  state.cash += sold * state.price;
+  // smoothed so the "Earning" readout doesn't flicker
+  state.avgRev = state.avgRev * 0.9 + (sold * state.price / dt) * 0.1;
+  state.lastSold = sold / dt;
+  if (sold > 0) Farm.onSale();
+}
+
 function renderCadence() {
   fastRender();
   slowTickCounter += 1;
@@ -283,6 +297,7 @@ function tick() {
   // By hand (farm / ending): customers in the pixel world do the buying.
   if (state.phase !== 'computer') {
     state.lastProduced = 0;
+    sellCups(dt);
     renderCadence();
     return;
   }
@@ -340,13 +355,7 @@ function tick() {
   }
 
   // --- sales ---
-  const maxSaleRate = state.customerRate * competitionShare();
-  const sold = Math.min(state.cupsUnsold, maxSaleRate * dt);
-  state.cupsUnsold -= sold;
-  state.cupsSold += sold;
-  state.cash += sold * state.price;
-  state.avgRev = sold * state.price / dt;
-  state.lastSold = sold / dt;
+    sellCups(dt);
 
   checkTrustMilestone();
 
