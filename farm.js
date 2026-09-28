@@ -404,11 +404,7 @@ const Farm = {
     }
 
     // revenue window (farm-style sales)
-    if (s.phase !== 'computer') {
-      const now = this.time;
-      this.sales = this.sales.filter(x => now - x[0] < 10);
-      s.avgRev = this.sales.reduce((a, x) => a + x[1], 0) / 10;
-    }
+    
   },
 
   updatePlayer(dt) {
@@ -504,8 +500,8 @@ const Farm = {
 
   updateCustomers(dt) {
     const s = state;
-    const selling = s.phase !== 'computer';
-    const rate = Math.min(selling ? 99 : 1.4, s.customerRate || 0);
+    const rate = Math.min(3, s.customerRate || 0);   
+    // how many walk by on screen (visual only)
     const share = competitionShare();
     if (!(s.era >= 4 && isOwned('disassembleFactories') && s.phase === 'computer')) {
       this.spawnAcc += rate * dt;
@@ -557,12 +553,9 @@ const Farm = {
         c.t += dt;
         if (c.t > 0.5) {
           if (s.cupsUnsold >= 1) {
-            if (selling) {
-              s.cupsUnsold -= 1; s.cupsSold += 1; s.cash += s.price;
-              this.sales.push([this.time, s.price]);
-              this.float(STAND_X, 112, '+$' + money(s.price), '#2f7a1e');
+            if (s.phase !== 'computer') {
+              this.float(c.x, 112, '+$' + money(s.price), '#2f7a1e');
               Sfx.sale();
-              this.onSale();
             }
             c.bubble = { cup: true, t: 1.2 };
             c.state = 'leave';
